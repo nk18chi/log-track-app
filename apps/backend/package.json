@@ -14,7 +14,8 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org naoki-fh --project log-track-app-backend ./dist && sentry-cli sourcemaps upload --org naoki-fh --project log-track-app-backend ./dist"
   },
   "keywords": [],
   "author": "",
@@ -47,6 +48,9 @@
     "@graphql-codegen/typescript": "^4.0.7",
     "@graphql-codegen/typescript-resolvers": "^4.1.0",
     "@graphql-tools/schema": "^10.0.4",
+    "@sentry/cli": "^2.36.1",
+    "@sentry/node": "^8.30.0",
+    "@sentry/profiling-node": "^8.30.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dataloader": "^2.2.2",

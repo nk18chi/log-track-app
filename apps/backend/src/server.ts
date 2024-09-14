@@ -13,6 +13,8 @@ import { OperationDefinitionNode as OperationNode } from 'graphql';
 import jwt from 'jsonwebtoken';
 import { rateLimitDirective } from 'graphql-rate-limit-directive';
 import { ApolloServerErrorCode } from '@apollo/server/errors';
+import * as Sentry from '@sentry/node';
+
 import connectMongoDB from './mongo/connect';
 import logger from './config/logger';
 import typeDefs from './graphql/schemas';
@@ -64,6 +66,31 @@ const runServer = async () => {
               throw error;
             }
             logger.info(`Used query complexity points: ${complexity} by ${operationName}`);
+          },
+          async didEncounterErrors(ctx) {
+            ctx.errors.forEach((err) => {
+              // Add scoped report details and send to Sentry
+              Sentry.withScope((scope) => {
+                // Annotate whether failing operation was query/mutation/subscription
+                scope.setTag('kind', ctx.operation?.operation);
+                // Log query and variables as extras
+                // (make sure to strip out sensitive data!)
+                scope.setExtra('query', ctx.request.query);
+                scope.setExtra('variables', ctx.request.variables);
+                scope.setUser({ username: 'test' });
+                if (err.path) {
+                  // We can also add the path as breadcrumb
+                  scope.addBreadcrumb({
+                    category: 'query-path',
+                    message: err.path.join(' > '),
+                    // level: Sentry.Severity.Debug,
+                  });
+                }
+                // eslint-disable-next-line no-param-reassign
+                err.message = `${err.message} - ${ctx.operationName}`;
+                Sentry.captureException(err);
+              });
+            });
           },
         }),
       },
