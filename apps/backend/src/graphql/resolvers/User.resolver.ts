@@ -7,6 +7,8 @@ import IUser from '../../models/User.type';
 const userResolver: Resolvers = {
   Query: {
     users: async (_, { first, after }) => {
+      // throw new Error('My first Sentry error!');
+
       const query = after ? { _id: { $gt: after } } : {};
       const users = await User.find(query)
         .sort({ _id: 1 })

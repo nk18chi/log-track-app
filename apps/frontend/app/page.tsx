@@ -2,6 +2,7 @@ import ClientComponent from '@/components/ClientComponent';
 import RelayPaginationComponent from '@/components/RelayPaginationComponent';
 import ServerComponent from '@/components/ServerComponent';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -114,6 +115,7 @@ export default async function Home() {
           <ServerComponent />
         </Suspense>
       </ErrorBoundary>
+      <Link href="/sentry-example-page">Link</Link>
     </main>
   );
 }
